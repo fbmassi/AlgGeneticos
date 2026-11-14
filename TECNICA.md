@@ -159,7 +159,7 @@ una única respuesta.
 ## Resultados y pruebas
 
 Se ejecutó Python 3.13.4 en Windows con los parámetros finales de la tabla, sin
-dependencias externas. `py -3 TP3/experimentos.py` reproduce las semillas 0–9 en
+dependencias externas. `py -3 experimentos.py` reproduce las semillas 0–9 en
 ambos modos. Cada resultado de esa tanda se validó antes de contabilizarlo:
 
 | Semilla | Generación textual | Segundos | Vim textual | Generación inmediata | Segundos | Vim inmediata |
@@ -182,12 +182,10 @@ y el inmediato entre 11 y 247 (14,836 s acumulados). Total de la configuración
 final: **60/60 ejecuciones completas, 100 % observado**. Ninguna terminó por un
 límite ni se aceptó como solución un candidato parcial.
 
-Para repetir la ampliación desde PowerShell:
+Para repetir la ampliación desde PowerShell, en la raíz del repositorio:
 
 ```powershell
 @'
-import sys
-sys.path.insert(0, "TP3")
 from ga import Config, solve, is_solution
 for immediate in (False, True):
     results = [solve(Config(seed=s, immediate=immediate)) for s in range(10, 30)]

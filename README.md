@@ -2,26 +2,25 @@
 
 Resolución del acertijo de cinco casas de Inteligencia Artificial (UADE) con un
 algoritmo genético real, Python 3.10 o posterior y biblioteca estándar. No requiere
-instalar paquetes. Los materiales originales permanecen en `_materiales_locales/`,
-excluidos de Git.
+instalar paquetes. Los materiales originales no se incluyen en este repositorio.
 
 ## Ejecutar en Windows 11
 
-Desde PowerShell, con Python instalado y disponible mediante `py`:
+Desde PowerShell, ubicado en la raíz del repositorio `AlgGeneticos`, con Python
+instalado y disponible mediante `py`:
 
 ```powershell
-Set-Location C:\dev\TP_IA\ai-cases
-py -3 TP3/ga.py --seed 42
-py -3 TP3/ga.py --seed 42 --immediate
-py -3 -m unittest discover -s TP3 -p "test_*.py" -v
-py -3 TP3/experimentos.py
-py -3 TP3/verificar.py
+py -3 ga.py --seed 42
+py -3 ga.py --seed 42 --immediate
+py -3 -m unittest discover -s . -p "test_*.py" -v
+py -3 experimentos.py
+py -3 verificar.py
 ```
 
 Se puede usar `python` en lugar de `py -3`. Para cambiar el presupuesto:
 
 ```powershell
-py -3 TP3/ga.py --seed 7 --population 300 --generations 3000 --seconds 30
+py -3 ga.py --seed 7 --population 300 --generations 3000 --seconds 30
 ```
 
 La consola muestra las casas de izquierda a derecha, las pistas cumplidas, el
