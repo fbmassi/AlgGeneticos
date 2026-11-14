@@ -1,0 +1,250 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Informe TP3 — Algoritmos Genéticos</title>
+<style>
+  :root{
+    --accent:#1f6f94;
+    --accent-dark:#17597a;
+    --rule:#cdd7de;
+    --th-bg:#d8e6f0;
+    --code-bg:#f1f3f4;
+    --text:#1b1b1b;
+    --muted:#5a6b76;
+  }
+  @page{ size:A4; margin:20mm 18mm 18mm 18mm; }
+  *{ box-sizing:border-box; }
+  html{ font-size:11pt; }
+  body{
+    font-family:-apple-system,"Helvetica Neue",Arial,sans-serif;
+    color:var(--text); line-height:1.5; margin:0;
+    -webkit-print-color-adjust:exact; print-color-adjust:exact;
+  }
+  h1{
+    color:var(--accent); font-size:25pt; line-height:1.15;
+    font-weight:700; margin:0 0 18pt 0; letter-spacing:-.3px;
+  }
+  h2{
+    color:var(--accent); font-size:15pt; font-weight:700;
+    margin:22pt 0 8pt 0; padding-bottom:4pt;
+    border-bottom:2px solid var(--accent); break-after:avoid;
+  }
+  h3{ color:var(--accent-dark); font-size:11.5pt; font-weight:700; margin:14pt 0 5pt 0; break-after:avoid; }
+  p{ margin:0 0 8pt 0; text-align:justify; }
+  ul,ol{ margin:0 0 8pt 0; padding-left:20pt; }
+  li{ margin:0 0 3pt 0; text-align:justify; }
+  code{
+    font-family:"SF Mono",Menlo,Consolas,monospace; font-size:9.3pt;
+    background:var(--code-bg); padding:1px 4px; border-radius:3px; color:#20303a;
+  }
+  .cover{ padding-top:60pt; }
+  .cover .meta{ margin-top:20pt; font-size:10.5pt; }
+  .cover .meta p{ margin:0 0 3pt 0; text-align:left; }
+  .cover .meta .block{ margin-bottom:10pt; }
+  .cover .note{ color:var(--muted); font-style:italic; font-size:10pt; margin-top:16pt; }
+  .label{ color:var(--accent); font-weight:700; }
+  .toc{ break-before:page; }
+  .toc ol{ padding-left:18pt; }
+  .toc li{ margin:3pt 0; }
+  table{
+    width:100%; border-collapse:collapse; margin:8pt 0 12pt 0;
+    font-size:9.6pt; break-inside:avoid;
+  }
+  th{
+    background:var(--th-bg); color:var(--accent-dark); font-weight:700;
+    text-align:left; padding:5pt 7pt; border:1px solid var(--rule);
+  }
+  td{ padding:5pt 7pt; border:1px solid var(--rule); vertical-align:top; }
+  td.num,th.num{ text-align:right; }
+  td.c,th.c{ text-align:center; }
+  tbody tr:nth-child(even){ background:#f7fafc; }
+  .small{ font-size:9.3pt; color:var(--muted); }
+  strong{ font-weight:700; }
+  .mono-block{
+    font-family:"SF Mono",Menlo,Consolas,monospace; font-size:8.8pt;
+    background:var(--code-bg); border:1px solid var(--rule); border-radius:4px;
+    padding:8pt 10pt; white-space:pre; overflow-x:auto; line-height:1.35; margin:6pt 0 12pt 0;
+    break-inside:avoid;
+  }
+</style>
+</head>
+<body>
+
+<!-- ===================== PORTADA ===================== -->
+<section class="cover">
+  <h1>Trabajo Práctico 03 — Algoritmos<br>Genéticos: acertijo de las cinco casas</h1>
+  <div class="meta">
+    <div class="block"><p><span class="label">Materia:</span></p><p>Inteligencia Artificial — 2C — 2026</p></div>
+    <div class="block"><p><span class="label">Profesor:</span></p><p>Parkinson, Christian Anibal</p></div>
+    <div class="block">
+      <p><span class="label">Equipo 8 — Integrantes:</span></p>
+      <p>Massi, Franco — L.U.: 1156946</p>
+      <p>Nari, Agustín Ignacio — L.U.: 1165816</p>
+      <p>Vanore, Miqueas — L.U.: 1179980</p>
+    </div>
+    <p class="note">Resultados ejecutados el 14/11/2026 con Python 3 y biblioteca estándar. Fecha de entrega: 16/11/2026.</p>
+  </div>
+</section>
+
+<!-- ===================== ÍNDICE ===================== -->
+<section class="toc">
+  <h2>Índice</h2>
+  <ol>
+    <li>Introducción y objetivo</li>
+    <li>Implementación y propiedades</li>
+    <li>Pruebas y resultados</li>
+    <li>Conclusiones y alcance</li>
+    <li>Material consultado y atribución</li>
+  </ol>
+</section>
+
+<!-- ===================== 1 ===================== -->
+<section>
+  <h2>1. Introducción y objetivo</h2>
+  <p>El trabajo resuelve mediante un <strong>algoritmo genético (AG)</strong> el acertijo de las cinco casas propuesto en la consigna. Según los objetivos del enunciado, se busca comprender el procesamiento evolutivo, desarrollar los operadores en un caso concreto de aplicación e identificar las ventajas y desventajas de la técnica. La resolución se implementa en <code>ga.py</code>, sin dependencias externas, sobre Python 3.10 o posterior.</p>
+  <p>El problema plantea cinco casas de colores distintos; en cada una vive una persona de una profesión diferente, que programa en un lenguaje, usa una base de datos NoSQL y un editor de textos, todos distintos entre casas. Se dan quince pistas que relacionan estos atributos y se pide responder <strong>quién usa el editor Vim</strong>. Es, en esencia, un problema de satisfacción de restricciones que aquí se aborda con una búsqueda poblacional evolutiva, tal como exige la consigna. La consigna provee la estructura guía <code>dev_ga_base.py</code> y admite proponer una propia: se adopta una representación por permutaciones con funciones pequeñas y clases de datos, evitando la codificación binaria del esqueleto, que admitiría valores inválidos o duplicados.</p>
+
+  <h3>Correspondencia con las tareas de la consigna</h3>
+  <table>
+    <thead><tr><th style="width:42%">Tarea solicitada</th><th>Resolución en este trabajo</th></tr></thead>
+    <tbody>
+      <tr><td>1. Identificar y diseñar un individuo</td><td>Cinco permutaciones de posiciones 0–4, una por categoría (§2)</td></tr>
+      <tr><td>2. Método de generación y poblar el universo inicial</td><td>Barajado aleatorio con semilla y tres genes fijados por pistas (§2)</td></tr>
+      <tr><td>3a. Operador de Selección</td><td>Torneo de tres (§2)</td></tr>
+      <tr><td>3b. Operador de Cruzamiento</td><td>Cruce de orden (OX) por categoría sobre genes libres (§2)</td></tr>
+      <tr><td>3c. Operador de Mutación</td><td>Intercambio de dos genes libres por categoría (§2)</td></tr>
+      <tr><td>4. Tres condiciones de corte</td><td>Solución hallada, máximo de generaciones y máximo de tiempo (§2)</td></tr>
+      <tr><td>5. Alternativas para generar individuos</td><td>Inmigrantes aleatorios y reinicialización; otras discutidas (§2)</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ===================== 2 ===================== -->
+<section>
+  <h2>2. Implementación y propiedades</h2>
+
+  <h3>2.1 Representación del individuo</h3>
+  <p>Un individuo es una tupla inmutable de cinco filas; cada fila es una permutación de <code>(0,1,2,3,4)</code>. Las filas representan, en orden, <strong>color, profesión, lenguaje, base de datos y editor</strong>. Dentro de cada fila, cada gen guarda la <strong>posición de la casa</strong> (0 a 4; la consola la muestra de 1 a 5) del valor correspondiente, declarado en la constante <code>CATEGORIES</code>. Por ejemplo, la fila de profesiones <code>(1, 2, 4, 3, 0)</code> ubica al Matemático en la segunda casa y al Desarrollador en la primera. La función <code>houses()</code> invierte la representación para mostrar una fila por casa.</p>
+  <table>
+    <thead><tr><th class="num" style="width:8%">Fila</th><th style="width:20%">Categoría</th><th>Valores (en orden de <code>CATEGORIES</code>)</th></tr></thead>
+    <tbody>
+      <tr><td class="num">0</td><td>Color</td><td>Rojo, Azul, Verde, Blanco, Amarillo</td></tr>
+      <tr><td class="num">1</td><td>Profesión</td><td>Matemático, Hacker, Ingeniero, Analista, Desarrollador</td></tr>
+      <tr><td class="num">2</td><td>Lenguaje</td><td>Python, C#, Java, C++, JavaScript</td></tr>
+      <tr><td class="num">3</td><td>Base de datos</td><td>Cassandra, MongoDB, Neo4j, Redis, HBase</td></tr>
+      <tr><td class="num">4</td><td>Editor</td><td>Brackets, Sublime Text, Atom, Notepad++, Vim</td></tr>
+    </tbody>
+  </table>
+  <p>Que cada categoría sea una permutación de <code>0..4</code> garantiza por construcción cinco valores distintos, sin ausencias ni duplicados. <code>well_formed()</code> verifica esa propiedad incluso en individuos externos. La unicidad exigida es la de los atributos dentro de cada individuo; la población sí puede contener individuos repetidos.</p>
+
+  <h3>2.2 Generación de la población inicial</h3>
+  <p><code>random_individual()</code> baraja las posiciones libres de cada categoría con una instancia local <code>random.Random(seed)</code>, lo que hace la ejecución reproducible. La población inicial por defecto es de 300 individuos (generación 0). Tres genes quedan fijados porque se deducen de las pistas, reduciendo el espacio de búsqueda sin eliminar soluciones válidas ni predeterminar quién usa Vim:</p>
+  <ul>
+    <li><strong>Desarrollador en la primera casa</strong> (posición 0), por la pista 10.</li>
+    <li><strong>Notepad++ en la casa del medio</strong> (posición 2), por la pista 9.</li>
+    <li><strong>Azul en la primera casa</strong> (posición 0), consecuencia de combinar las pistas 10 y 15.</li>
+  </ul>
+  <p>Estas ubicaciones se conservan en todos los operadores: los descendientes pertenecen al mismo espacio de búsqueda que sus padres.</p>
+
+  <h3>2.3 Operadores genéticos</h3>
+  <p><strong>Selección — torneo de tres.</strong> <code>tournament()</code> sortea tres índices con reemplazo y selecciona al de mayor aptitud; los empates favorecen al primero sorteado. Es una presión selectiva moderada que conserva diversidad.</p>
+  <p><strong>Cruzamiento — cruce de orden (OX).</strong> Opera categoría por categoría, solo sobre genes libres. <code>order_crossover()</code> copia un segmento contiguo del primer padre y completa el resto recorriendo circularmente el segundo, omitiendo valores ya presentes, de modo que el hijo sigue siendo una permutación válida; luego reincorpora los genes fijos. Los padres permanecen inmutables. La probabilidad de cruce por descendiente es 0,30; si no se aplica, se copia un padre y se permite mutarlo.</p>
+  <p><strong>Mutación — intercambio de genes libres.</strong> <code>mutate()</code> recorre cada categoría y, con probabilidad 0,12, intercambia dos de sus genes libres. El swap mantiene la permutación y respeta los genes fijos, sin reparar pistas ni hacer búsqueda local oculta.</p>
+
+  <h3>2.4 Aptitud, validez y condiciones de corte</h3>
+  <p><code>clue_status()</code> devuelve quince booleanos en el orden del enunciado: la pista 1 es la estructura de cinco casas y las otras catorce son las relaciones originales. La aptitud es el número de pistas satisfechas (equivalente a 15 menos las incumplidas); no hay pesos arbitrarios ni pistas agregadas. <code>is_solution()</code> exige estructura válida y todas las condiciones; no acepta un puntaje almacenado como prueba de validez. La pista 6 («verde a la derecha de blanca») se interpreta por defecto como <em>posición de verde mayor que la de blanca</em>; con <code>--immediate</code> se exige la casa inmediatamente siguiente. Las pistas de vecindad (11 y 12) exigen distancia exactamente uno.</p>
+  <table>
+    <thead><tr><th style="width:24%">Corte</th><th>Criterio</th></tr></thead>
+    <tbody>
+      <tr><td><code>solucion</code></td><td>Se evalúa un individuo con las quince pistas cumplidas y validado por <code>is_solution()</code>. Tiene prioridad sobre los límites.</td></tr>
+      <tr><td><code>generaciones</code></td><td>Se alcanza el máximo de generaciones evolutivas (por defecto 3000) sin hallar solución.</td></tr>
+      <tr><td><code>tiempo</code></td><td>El tiempo transcurrido, medido con <code>time.monotonic</code>, supera el presupuesto (por defecto 30 s).</td></tr>
+    </tbody>
+  </table>
+  <p>Con tiempo cero se evalúa al menos un individuo para poder devolver un resultado. Una salida parcial informa las pistas incumplidas y no atribuye Vim a ninguna profesión como respuesta válida.</p>
+  <table>
+    <thead><tr><th style="width:46%">Parámetro</th><th class="c">Valor</th><th>Motivo</th></tr></thead>
+    <tbody>
+      <tr><td>Población</td><td class="c">300</td><td>Diversidad con evaluación barata</td></tr>
+      <tr><td>Tamaño de torneo</td><td class="c">3</td><td>Presión selectiva moderada</td></tr>
+      <tr><td>Probabilidad de cruce</td><td class="c">0,30</td><td>Recombina sin destruir siempre las combinaciones</td></tr>
+      <tr><td>Probabilidad de swap por categoría</td><td class="c">0,12</td><td>Cambios pequeños, sin congelar posiciones</td></tr>
+      <tr><td>Élites</td><td class="c">2</td><td>Evita perder los mejores candidatos</td></tr>
+      <tr><td>Inmigrantes por generación</td><td class="c">15</td><td>Diversidad continua (5 %)</td></tr>
+      <tr><td>Reinicialización</td><td class="c">100</td><td>Generaciones sin mejora global antes de reiniciar</td></tr>
+      <tr><td>Máximo de generaciones</td><td class="c">3000</td><td>Presupuesto finito de evolución</td></tr>
+      <tr><td>Máximo de tiempo</td><td class="c">30 s</td><td>Presupuesto práctico configurable</td></tr>
+    </tbody>
+  </table>
+
+  <h3>2.5 Reemplazo generacional y alternativas de generación</h3>
+  <p>El reemplazo es generacional con elitismo: cada generación conserva dos élites sin cambios, incorpora quince inmigrantes aleatorios y completa el resto con descendientes. Tras cien generaciones sin mejora del mejor fitness global, la población se reinicializa por completo para escapar de mesetas; en esa generación no se reinsertan las élites, para no atraer de inmediato toda la población a la misma meseta. El mejor candidato global se conserva aparte para informar correctamente un corte por límites. Sobre la tarea 5 (alternativas para incorporar individuos):</p>
+  <ul>
+    <li><strong>Generación aleatoria inicial</strong> (implementada): barajado con semilla y genes fijos.</li>
+    <li><strong>Descendientes por recombinación y mutación</strong> (implementada): el mecanismo evolutivo central.</li>
+    <li><strong>Inmigrantes aleatorios</strong> (implementada): diversidad continua en cada generación.</li>
+    <li><strong>Reinicialización de población</strong> (implementada): renovación total ante estancamiento.</li>
+    <li><strong>Reinicio parcial conservando élites</strong> (ensayada, descartada): atraía la población a la misma meseta.</li>
+    <li><strong>Generación guiada</strong> (no implementada): partir de individuos que ya satisfacen más pistas reduce combinaciones inútiles, pero agrega sesgo y lógica específica del acertijo.</li>
+  </ul>
+  <p>No se incorporan solucionadores de restricciones ni búsqueda local dentro del AG, para mantener la naturaleza evolutiva del método.</p>
+</section>
+
+<!-- ===================== 3 ===================== -->
+<section>
+  <h2>3. Pruebas y resultados</h2>
+  <p>Con los parámetros por defecto, la demostración con semilla 42 encuentra una solución completa en la <strong>generación 9</strong> (interpretación por posición mayor) y en la <strong>generación 22</strong> (interpretación inmediata), en fracciones de segundo. La tabla hallada en el modo por defecto es:</p>
+  <div class="mono-block">Casa | Color    | Profesión     | Lenguaje   | Base de datos | Editor
+1    | Azul     | Desarrollador | C++        | Neo4j         | Sublime Text
+2    | Rojo     | Matemático    | Java       | Redis         | Vim
+3    | Blanco   | Hacker        | Python     | HBase         | Notepad++
+4    | Amarillo | Analista      | JavaScript | Cassandra     | Atom
+5    | Verde    | Ingeniero     | C#         | MongoDB       | Brackets</div>
+  <p><code>experimentos.py</code> ejecuta diez semillas (0–9) por interpretación y reporta la tasa de éxito observada. En las pruebas realizadas la configuración final resolvió <strong>10/10 casos en cada interpretación</strong> con 15/15 pistas; ampliando a las semillas 10–29 se obtuvo <strong>20/20 por interpretación</strong>, en total <strong>60/60 ejecuciones completas</strong> (100 % observado), ninguna cortada por un límite ni aceptada como parcial. Una tasa observada describe esas ejecuciones y no garantiza convergencia para otras semillas o presupuestos.</p>
+  <p>La suite <code>test_ga.py</code> incluye <strong>23 pruebas con <code>unittest</code></strong> (todas en verde en la última ejecución): estructura y unicidad, codificación y decodificación, las quince pistas contra un oráculo por casas, operadores que preservan la estructura, las tres condiciones de corte, reinicios, repetibilidad por semilla, validación de parámetros y códigos de salida de la consola.</p>
+  <p>De forma independiente del AG —sin usar su fitness ni sus operadores— <code>verificar.py</code> enumera todas las permutaciones por categoría y las poda con las pistas, confirmando que el acertijo <strong>no tiene una respuesta única</strong>:</p>
+  <table>
+    <thead><tr><th>Interpretación de «a la derecha»</th><th class="num">Soluciones</th><th class="num">Desarroll.</th><th class="num">Hacker</th><th class="num">Ingeniero</th><th class="num">Matemático</th></tr></thead>
+    <tbody>
+      <tr><td>Cualquier posición mayor (por defecto)</td><td class="num">31</td><td class="num">12</td><td class="num">6</td><td class="num">1</td><td class="num">12</td></tr>
+      <tr><td>Inmediatamente a la derecha</td><td class="num">14</td><td class="num">6</td><td class="num">2</td><td class="num">1</td><td class="num">5</td></tr>
+    </tbody>
+  </table>
+  <p class="small">Las columnas de profesiones indican en cuántas soluciones cada una usa Vim. Las 14 soluciones del modo inmediato son un subconjunto estricto de las 31 del modo textual. Ninguna solución asigna Vim al Analista, porque usa Atom (pista 5).</p>
+</section>
+
+<!-- ===================== 4 ===================== -->
+<section>
+  <h2>4. Conclusiones y alcance</h2>
+  <p><strong>Respuesta al problema.</strong> <code>vim_user()</code> revalida la solución y responde qué profesión usa Vim en la tabla encontrada; con semilla 42 y la interpretación por defecto, el resultado es el <strong>Matemático</strong>. La verificación muestra, sin embargo, que la respuesta <strong>no es única</strong>: según las pistas, Vim puede corresponder al Desarrollador, al Hacker, al Ingeniero o al Matemático. La profesión que informa una ejecución del AG es la de la solución concreta que ese recorrido encontró, no una respuesta universal; corresponde a la cátedra aclarar o agregar pistas si se busca una sola solución.</p>
+  <p><strong>Ventajas.</strong> El AG explora el espacio combinatorio con operadores pequeños y conserva siempre representaciones válidas; la codificación por permutaciones evita penalizar duplicados que nunca deberían generarse. Es un buen vehículo didáctico para ilustrar evolución, selección y diversidad.</p>
+  <p><strong>Limitaciones.</strong> Como toda metaheurística, el AG es sensible a parámetros y semillas, puede estancarse en mesetas de fitness y no garantiza convergencia ni unicidad. Para un problema pequeño como este, una enumeración con poda resulta más apropiada si el objetivo fuese demostrar todas las respuestas; por eso queda separada en <code>verificar.py</code>, ya que la consigna exige resolver mediante un algoritmo genético.</p>
+  <p><strong>Trabajo futuro.</strong> Podrían explorarse operadores alternativos (cruce PMX, mutación por inversión), autoajuste de las tasas de cruce y mutación, poblaciones con nichos para hallar varias soluciones distintas en una corrida y una generación guiada que parta de individuos parcialmente consistentes. Toda variante debería compararse con el mismo protocolo reproducible y sin presentar una tasa observada como garantía.</p>
+</section>
+
+<!-- ===================== 5 ===================== -->
+<section>
+  <h2>5. Material consultado y atribución</h2>
+  <p>El proyecto no requiere instalar paquetes: usa solo la biblioteca estándar de Python 3.10 o posterior. Desde la carpeta del trabajo:</p>
+  <div class="mono-block">python3 ga.py --seed 42
+python3 ga.py --seed 42 --immediate
+python3 -m unittest discover -p "test_*.py" -v
+python3 experimentos.py
+python3 verificar.py</div>
+  <p>La consola muestra las casas de izquierda a derecha, las pistas cumplidas, el motivo de corte y —solo si la solución es válida— la profesión que usa Vim. El código de salida es <strong>0</strong> para solución completa y <strong>1</strong> para resultado parcial.</p>
+  <table>
+    <thead><tr><th style="width:24%">Archivo</th><th>Responsabilidad</th></tr></thead>
+    <tbody>
+      <tr><td><code>ga.py</code></td><td>Representación, pistas, operadores, búsqueda y salida por consola</td></tr>
+      <tr><td><code>test_ga.py</code></td><td>Suite de 23 pruebas automatizadas con <code>unittest</code></td></tr>
+      <tr><td><code>experimentos.py</code></td><td>Diez semillas por interpretación y tasa de éxito observada</td></tr>
+      <tr><td><code>verificar.py</code></td><td>Enumeración exacta independiente para auditar la ambigüedad</td></tr>
+      <tr><td><code>TECNICA.md</code> / <code>README.md</code></td><td>Diseño, parámetros, resultados medidos, limitaciones y uso</td></tr>
+    </tbody>
+  </table>
+  <p>Se revisó la consigna <code>C221-TP3-AlgoritmosGeneticos.pdf</code> (Inteligencia Artificial, UADE; adaptación docente de Nelson Ponzoni) y los apuntes de algoritmos genéticos de la cátedra: selección por aptitud, cruzamiento, mutación, penalizaciones y genes inmutables. <code>ga.py</code> no importa ni consulta la enumeración exacta de <code>verificar.py</code>. Los materiales originales permanecen locales y la revisión personal y la entrega del código y el soporte en WebCampus quedan a cargo del grupo.</p>
+</section>
+
+</body>
+</html>
