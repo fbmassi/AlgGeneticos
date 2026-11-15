@@ -14,8 +14,16 @@ Como apoyo se consultaron las páginas 26–41 y 48–52 de
 `8. Algoritmos Genéticos.pdf` y los apartados de algoritmos genéticos y del
 acertijo de Einstein de `Apuntes - Inteligencia Artificial (2).docx`. Los apuntes
 describen selección por aptitud, cruzamiento, mutación, penalizaciones y genes
-inmutables. La notebook mencionada en clase no está en los materiales disponibles
-y no es necesaria para ejecutar el TP.
+inmutables. También se consultaron los ejemplos de clase
+`EJ_32_Algortimo_genetico.ipynb` (Einstein) y `Ej31_Algoritmos_genéticos.ipynb`
+(mochila). Son referencias conceptuales; sus pistas y parámetros no reemplazan
+los de la consigna del TP3.
+
+El notebook de entrega `TP3-AlgoritmosGeneticos.ipynb` importa `ga.py` para mostrar
+la representación, los operadores, una ejecución reproducible y la validación
+de las quince pistas. Después de la resolución genética utiliza `verificar.py`
+para comprobar la ambigüedad. Puede ejecutarse en Jupyter o Colab con ambos
+scripts en la carpeta de trabajo, sin duplicar la lógica del algoritmo.
 
 | Tarea | Resolución |
 | --- | --- |
